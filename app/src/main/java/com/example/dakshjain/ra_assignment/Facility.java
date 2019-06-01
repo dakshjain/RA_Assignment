@@ -6,10 +6,19 @@ import io.realm.annotations.PrimaryKey;
 
 public class Facility extends RealmObject {
 
-    @PrimaryKey
-    private int id ;
+    public Facility() {
+    }
 
-    private String name ;
+    Facility(int id, String name, RealmList<Options> optionsRealmList) {
+        this.id = id;
+        this.name = name;
+        this.optionsRealmList = optionsRealmList;
+    }
+
+    @PrimaryKey
+    private int id;
+
+    private String name;
 
     private RealmList<Options> optionsRealmList = new RealmList<Options>();
 
