@@ -15,13 +15,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         super(application);
     }
 
-    public void getData() {
+    void getData() {
 
         JSONParser.getDataFromWeb();
 
     }
 
-    public void loadData() {
+    void loadData() {
         RealmController realmController = new RealmController();
 
         ArrayList<Facility> facilityArrayList = realmController.getFacility();
