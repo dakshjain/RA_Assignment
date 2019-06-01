@@ -5,10 +5,29 @@ import io.realm.annotations.PrimaryKey;
 
 public class Options extends RealmObject {
 
-    @PrimaryKey
-    private int id ;
+    public Options() {
+    }
 
-    private String name ;
+    public Options(int id, String name, String icon) {
+        this.id = id;
+        this.name = name;
+        this.icon = icon;
+    }
+
+    @PrimaryKey
+    private int id;
+
+    private String name;
+
+    private String icon;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public int getId() {
         return id;
