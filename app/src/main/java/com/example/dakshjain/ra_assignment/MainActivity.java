@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         if(isOneDay()) {
             SharedPreferences.Editor editor = getSharedPreferences("TIME-STAMP", MODE_PRIVATE).edit();
-            editor.putLong("timeStamp", System.currentTimeMillis());
+            editor.putLong("timeStamp", System.currentTimeMillis()/1000);
             editor.apply();
 
             mainActivityViewModel.getData();
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isOneDay(){
         SharedPreferences prefs = getSharedPreferences("TIME-STAMP", MODE_PRIVATE);
         Long restoredText = prefs.getLong("timeStamp", 0);
-        Long timestamp = System.currentTimeMillis();
+        Long timestamp = System.currentTimeMillis()/1000;
         return restoredText == 0 || (timestamp - restoredText) > 86400;
     }
 

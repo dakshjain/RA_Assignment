@@ -76,6 +76,7 @@ public class JSONParser {
         ArrayList<String> stringArrayList = new ArrayList<>();
         JSONArray jsonArray = jsonObject.getJSONArray("exclusions");
         RealmController realmController = new RealmController();
+
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONArray innerJsonArray = jsonArray.getJSONArray(i);
             stringArrayList.clear();
