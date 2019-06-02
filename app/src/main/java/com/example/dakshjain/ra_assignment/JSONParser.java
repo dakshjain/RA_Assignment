@@ -21,7 +21,13 @@ class JSONParser {
 
     private static final String MAIN_URL = "https://my-json-server.typicode.com/iranjith4/ad-assignment/db";
 
-    static void getDataFromWeb() {
+    public static final String TAG = "TAG";
+
+    private static final String KEY_USER_ID = "user_id";
+
+    private static Response response;
+
+    static void getDataFromWeb(final Apiresponse apiresponse) {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(15, TimeUnit.SECONDS)
@@ -31,6 +37,8 @@ class JSONParser {
                 .url(MAIN_URL)
                 .build();
 
+        apiresponse.isLoading();
+
         final JSONObject jsonObject;
 
         client.newCall(request).enqueue(new Callback() {
@@ -39,12 +47,16 @@ class JSONParser {
 
                 if (!response.isSuccessful()) {
                     Log.d("OKHTTP", "response unsuccessfull");
+                    apiresponse.isError();
                     throw new IOException("Unexpected code " + response);
                 } else {
                     // do something wih the result
                     Log.d("OKHTTP", "response successfull");
+                    apiresponse.isSuccessFull();
                     String result = response.body().string();
                     try {
+                        RealmController realmController = new RealmController();
+                        realmController.deleteAll();
                         jsonObjecttoFacilityRealm(result);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -59,6 +71,7 @@ class JSONParser {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                apiresponse.isFailed();
                 e.printStackTrace();
                 Log.d("OKHTTP", "onFailure");
             }

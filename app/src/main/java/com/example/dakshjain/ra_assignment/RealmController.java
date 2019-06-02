@@ -12,6 +12,18 @@ public class RealmController {
         realm = Realm.getDefaultInstance();
     }
 
+    void deleteAll(){
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+
+                    realm.deleteAll(); // could be copyToRealmOrUpdate
+                }
+            });
+        }
+    }
+
     void insertOrupdate(final Facility facility) {
         try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(new Realm.Transaction() {
