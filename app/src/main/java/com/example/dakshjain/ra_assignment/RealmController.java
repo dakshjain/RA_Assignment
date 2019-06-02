@@ -29,6 +29,24 @@ public class RealmController {
         }
     }
 
+    public void insertOrUpdate(final Exclusions exclusions){
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+
+                    realm.insertOrUpdate(exclusions); // could be copyToRealmOrUpdate
+                }
+            });
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
+        }
+    }
+
     public ArrayList<Facility> getFacility() {
         Realm realm = null;
         final ArrayList<Facility> facilityArrayList = new ArrayList<>();
@@ -52,6 +70,31 @@ public class RealmController {
         }
 
         return facilityArrayList;
+    }
+
+    public ArrayList<Exclusions> getExclusions() {
+        Realm realm = null;
+        final ArrayList<Exclusions> exclusionsArrayList = new ArrayList<>();
+        try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+
+                @Override
+                public void execute(Realm realm) {
+
+                    RealmResults<Exclusions> results = realm.where(Exclusions.class).findAll();
+                    for (int i = 0; i < results.size(); i++) {
+                        exclusionsArrayList.add(results.get(i));
+                    }
+                }
+            });
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
+        }
+
+        return exclusionsArrayList;
     }
 
 }

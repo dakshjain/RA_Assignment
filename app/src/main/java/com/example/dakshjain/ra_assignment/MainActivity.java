@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -55,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setAdapter(adapter);
 
                 adapter.notifyDataSetChanged();
+            }
+        });
+
+        mainActivityViewModel.exclusionsMutableLiceData.observe(this, new Observer<ArrayList<Exclusions>>() {
+            @Override
+            public void onChanged(@Nullable ArrayList<Exclusions> exclusions) {
+                Toast.makeText(context, ""+exclusions.size(), Toast.LENGTH_SHORT).show();
             }
         });
 

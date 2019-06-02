@@ -11,6 +11,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     MutableLiveData<String> facility_name = new MutableLiveData<>();
     MutableLiveData<ArrayList<Facility>> facilityMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<ArrayList<Exclusions>> exclusionsMutableLiceData = new MutableLiveData<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -26,6 +27,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         RealmController realmController = new RealmController();
 
         facilityMutableLiveData.postValue(realmController.getFacility());
+        exclusionsMutableLiceData.postValue(realmController.getExclusions());
 
     }
 

@@ -29,7 +29,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'io.realm:android-adapters:2.0.0'
-    implementation 'com.squareup.okhttp:okhttp:2.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.0.0-alpha02'
 
     implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation "android.arch.lifecycle:viewmodel:1.1.0"
