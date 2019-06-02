@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class MainActivityViewModel extends AndroidViewModel {
 
     MutableLiveData<String> facility_name = new MutableLiveData<>();
+    MutableLiveData<ArrayList<Facility>> facilityMutableLiveData = new MutableLiveData<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -24,7 +25,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     void loadData() {
         RealmController realmController = new RealmController();
 
-        ArrayList<Facility> facilityArrayList = realmController.getFacility();
-        String name = facilityArrayList.get(0).getName();
+        facilityMutableLiveData.postValue(realmController.getFacility());
+
     }
+
 }

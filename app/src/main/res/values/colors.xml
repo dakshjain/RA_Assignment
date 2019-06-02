@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="checkbox_active">#ffffff</color>
-    <color name="checkbox_inactive">#b4b4b4</color>
+    <color name="checkbox_inactive">#e6e4e4</color>
+    <color name="darkText">#000000</color>
 </resources>
