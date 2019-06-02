@@ -16,9 +16,9 @@ public class MainActivityViewModel extends AndroidViewModel {
         super(application);
     }
 
-    void getData() {
+    void getData(Apiresponse apiresponse) {
 
-        JSONParser.getDataFromWeb();
+        JSONParser.getDataFromWeb(apiresponse);
 
     }
 

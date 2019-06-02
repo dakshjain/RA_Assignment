@@ -4,10 +4,11 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -31,19 +33,47 @@ public class MainActivity extends AppCompatActivity {
     MainActivityViewModel mainActivityViewModel;
     Context context;
     ArrayList<String> radioButtonCheckedList = new ArrayList<>();
+    AlertDialog.Builder builder;
+    AlertDialog alert ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
+        builder = new AlertDialog.Builder(this);
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         if(isOneDay()) {
             SharedPreferences.Editor editor = getSharedPreferences("TIME-STAMP", MODE_PRIVATE).edit();
             editor.putLong("timeStamp", System.currentTimeMillis()/1000);
             editor.apply();
 
-            mainActivityViewModel.getData();
+            mainActivityViewModel.getData(new Apiresponse() {
+                @Override
+                public void isFailed() {
+
+                }
+
+                @Override
+                public void isSuccessFull() {
+                }
+
+                @Override
+                public void isError() {
+
+                }
+
+                @Override
+                public void loadData() {
+                   // hideDialog();
+                    mainActivityViewModel.loadData();
+                }
+
+                @Override
+                public void isLoading() {
+                    //showDialog(false , "Loading" , "Loading");
+                }
+            });
         }
         Realm.init(this);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder()
@@ -74,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
-
-
     }
 
     boolean isOneDay(){
@@ -199,5 +226,32 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    public void showDialog(boolean isCancel , String message  ,String title){
+        builder.setMessage(message) .setTitle(title);
+
+        //Setting message manually and performing action on button click
+        builder.setMessage("Do you want to close this application ?")
+                .setCancelable(isCancel)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                        Toast.makeText(getApplicationContext(),"you choose yes action for alertbox",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                ;
+
+
+        //Creating dialog box
+        alert = builder.create();
+        //Setting the title manually
+        alert.setTitle("AlertDialogExample");
+        alert.show();
+    }
+
+    public void hideDialog(){
+        alert.cancel();
     }
 }
