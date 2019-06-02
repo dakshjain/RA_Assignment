@@ -17,15 +17,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class JSONParser {
+class JSONParser {
 
     private static final String MAIN_URL = "https://my-json-server.typicode.com/iranjith4/ad-assignment/db";
-
-    public static final String TAG = "TAG";
-
-    private static final String KEY_USER_ID = "user_id";
-
-    private static Response response;
 
     static void getDataFromWeb() {
 
@@ -72,29 +66,33 @@ public class JSONParser {
     }
 
     private static void jsonObjectToExclusionRealm(String response) throws JSONException {
-        JSONObject jsonObject = new JSONObject(response);
         ArrayList<String> stringArrayList = new ArrayList<>();
-        JSONArray jsonArray = jsonObject.getJSONArray("exclusions");
         RealmController realmController = new RealmController();
+        JSONObject jsonObject = new JSONObject(response);
+        JSONArray jsonArray = jsonObject.getJSONArray("exclusions");
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONArray innerJsonArray = jsonArray.getJSONArray(i);
-            stringArrayList.clear();
-            for (int j = 0; j < innerJsonArray.length(); j++) {
-                JSONObject innerJSONObject = innerJsonArray.getJSONObject(j);
-                String facility_id = innerJSONObject.getString("facility_id");
-                String option_id = innerJSONObject.getString("options_id");
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONArray innerJsonArray = jsonArray.getJSONArray(i);
+                stringArrayList.clear();
+                for (int j = 0; j < innerJsonArray.length(); j++) {
+                    JSONObject innerJSONObject = innerJsonArray.getJSONObject(j);
+                    String facility_id = innerJSONObject.getString("facility_id");
+                    String option_id = innerJSONObject.getString("options_id");
 
-                ArrayList<Facility> facilityArrayList = realmController.getFacilitybyId(facility_id);
-                for (Facility facility : facilityArrayList) {
-                    if (facility.getOptionsRealmList().getId().equals(option_id)) {
-                        stringArrayList.add(facility.getOptionsRealmList().getName());
+                    if(facility_id != null && option_id != null) {
+                        ArrayList<Facility> facilityArrayList = realmController.getFacilitybyId(facility_id);
+                        for (Facility facility : facilityArrayList) {
+                            if (facility.getOptionsRealmList().getId().equals(option_id)) {
+                                stringArrayList.add(facility.getOptionsRealmList().getName());
+                            }
+                        }
                     }
                 }
-            }
 
-            ExclusionList exclusion = new ExclusionList(stringArrayList.get(0), stringArrayList.get(1));
-            realmController.insertOrUpdate(exclusion);
+                ExclusionList exclusion = new ExclusionList(stringArrayList.get(0), stringArrayList.get(1));
+                realmController.insertOrUpdate(exclusion);
+            }
         }
 
 
@@ -104,23 +102,25 @@ public class JSONParser {
         JSONObject jsonObject = new JSONObject(response);
 
         JSONArray jsonArray = jsonObject.getJSONArray("facilities");
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject facility = jsonArray.getJSONObject(i);
-            String facility_id = facility.getString("facility_id");
-            String name = facility.getString("name");
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject facility = jsonArray.getJSONObject(i);
+                String facility_id = facility.getString("facility_id");
+                String name = facility.getString("name");
 
-            JSONArray optionJSONArray = facility.getJSONArray("options");
-            for (int j = 0; j < optionJSONArray.length(); j++) {
-                JSONObject optionJsonObject = optionJSONArray.getJSONObject(j);
-                String option_id = optionJsonObject.getString("id");
-                String option_name = optionJsonObject.getString("name");
-                String option_icon = optionJsonObject.getString("icon");
+                JSONArray optionJSONArray = facility.getJSONArray("options");
+                for (int j = 0; j < optionJSONArray.length(); j++) {
+                    JSONObject optionJsonObject = optionJSONArray.getJSONObject(j);
+                    String option_id = optionJsonObject.getString("id");
+                    String option_name = optionJsonObject.getString("name");
+                    String option_icon = optionJsonObject.getString("icon");
 
-                Options options = new Options(option_id, option_name, option_icon);
+                    Options options = new Options(option_id, option_name, option_icon);
 
-                Facility facility_ = new Facility(facility_id, name, options);
-                RealmController realmController = new RealmController();
-                realmController.insertOrupdate(facility_);
+                    Facility facility_ = new Facility(facility_id, name, options);
+                    RealmController realmController = new RealmController();
+                    realmController.insertOrupdate(facility_);
+                }
             }
         }
     }
