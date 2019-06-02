@@ -6,15 +6,14 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class RealmController {
-    Realm realm = Realm.getDefaultInstance();
+    Realm realm ;
 
     RealmController() {
+        realm = Realm.getDefaultInstance();
     }
 
-    public void insertOrupdate(final Facility facility) {
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
+    void insertOrupdate(final Facility facility) {
+        try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -22,79 +21,89 @@ public class RealmController {
                     realm.insertOrUpdate(facility); // could be copyToRealmOrUpdate
                 }
             });
-        } finally {
-            if (realm != null) {
-                realm.close();
-            }
         }
     }
 
-    public void insertOrUpdate(final Exclusions exclusions){
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
+    void insertOrUpdate(final ExclusionList exclusionList){
+        try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
 
-                    realm.insertOrUpdate(exclusions); // could be copyToRealmOrUpdate
+                    realm.insertOrUpdate(exclusionList); // could be copyToRealmOrUpdate
                 }
             });
-        } finally {
-            if (realm != null) {
-                realm.close();
-            }
         }
     }
 
-    public ArrayList<Facility> getFacility() {
-        Realm realm = null;
+    ArrayList<Facility> getFacilityByIdDistinct(){
         final ArrayList<Facility> facilityArrayList = new ArrayList<>();
-        try {
-            realm = Realm.getDefaultInstance();
+        try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(new Realm.Transaction() {
 
                 @Override
                 public void execute(Realm realm) {
 
-                    RealmResults<Facility> results = realm.where(Facility.class).findAll();
-                    for (int i = 0; i < results.size(); i++) {
-                        facilityArrayList.add(results.get(i));
-                    }
+                    RealmResults<Facility> results = realm.where(Facility.class).distinct("id");
+                    facilityArrayList.addAll(results);
                 }
             });
-        } finally {
-            if (realm != null) {
-                realm.close();
-            }
         }
 
         return facilityArrayList;
     }
 
-    public ArrayList<Exclusions> getExclusions() {
-        Realm realm = null;
-        final ArrayList<Exclusions> exclusionsArrayList = new ArrayList<>();
-        try {
-            realm = Realm.getDefaultInstance();
+    ArrayList<Facility> getFacilitybyId(final String facilityId){
+        final ArrayList<Facility> facilityArrayList = new ArrayList<>();
+        try (Realm realm = Realm.getDefaultInstance()) {
             realm.executeTransaction(new Realm.Transaction() {
 
                 @Override
                 public void execute(Realm realm) {
 
-                    RealmResults<Exclusions> results = realm.where(Exclusions.class).findAll();
-                    for (int i = 0; i < results.size(); i++) {
-                        exclusionsArrayList.add(results.get(i));
-                    }
+                    RealmResults<Facility> results = realm.where(Facility.class).equalTo("id", facilityId).findAll();
+                    facilityArrayList.addAll(results);
                 }
             });
-        } finally {
-            if (realm != null) {
-                realm.close();
-            }
         }
 
-        return exclusionsArrayList;
+        return facilityArrayList;
     }
 
+    ArrayList<ExclusionList> getExclusions() {
+        final ArrayList<ExclusionList> exclusionListArrayList = new ArrayList<>();
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(new Realm.Transaction() {
+
+                @Override
+                public void execute(Realm realm) {
+
+                    RealmResults<ExclusionList> results = realm.where(ExclusionList.class).findAll();
+                    exclusionListArrayList.addAll(realm.copyFromRealm(results));
+                }
+            });
+        }
+
+        return exclusionListArrayList;
+    }
+
+    boolean isExclusion(final String selectedOption, final String option){
+        final String[] name = new String[1];
+        final ExclusionList[] results = new ExclusionList[1];
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransaction(new Realm.Transaction() {
+
+                @Override
+                public void execute(Realm realm) {
+
+                    results[0] = realm.where(ExclusionList.class).equalTo("exclusion1", selectedOption).equalTo("exclusion2", option).findFirst();
+                    if (results[0] == null) {
+                        results[0] = realm.where(ExclusionList.class).equalTo("exclusion2", selectedOption).equalTo("exclusion1", option).findFirst();
+                    }
+
+                }
+            });
+        }
+        return results[0] != null;
+    }
 }
