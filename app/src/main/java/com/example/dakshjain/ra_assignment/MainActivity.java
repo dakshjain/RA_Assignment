@@ -112,13 +112,15 @@ public class MainActivity extends AppCompatActivity {
             for (final Facility facility1 : mainActivityViewModel.getOptionArrayList(facility.getId())) {
 
                 RadioButton radioButton = new RadioButton(context);
-                radioButton.setLayoutParams(new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                radioButton.setPadding((int) getResources().getDimension(R.dimen.padding30), 0, 0, 0);
-                radioButton.setButtonDrawable(R.drawable.swimming_2x);
+                radioButton.setLayoutParams(new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                radioButton.setPadding((int) getResources().getDimension(R.dimen.padding30), (int) getResources().getDimension(R.dimen.paddin15), 0, 0);
+
+                setBackground(facility1.getOptionsRealmList().getName() , radioButton);
                 radioButton.setBackground(getResources().getDrawable(R.drawable.checkbox_background, null));
                 radioButton.setTextColor(getResources().getColor(R.color.darkText));
                 radioButton.setText(facility1.getOptionsRealmList().getName());
+
                 radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
@@ -162,6 +164,39 @@ public class MainActivity extends AppCompatActivity {
                 super(itemView);
                 facilityName = itemView.findViewById(R.id.tv_facility_name);
                 optionRadioGroup = itemView.findViewById(R.id.rg_option);
+            }
+        }
+
+
+        private void setBackground(String name , RadioButton radioButton) {
+            switch (name){
+                case "Apartment":
+                    radioButton.setButtonDrawable(R.drawable.apartment_2x);
+                    break;
+                case "Condo":
+                    radioButton.setButtonDrawable(R.drawable.condo_2x);
+                    break;
+                case "Boat House":
+                    radioButton.setButtonDrawable(R.drawable.condo_2x);
+                    break;
+                case "Land":
+                    radioButton.setButtonDrawable(R.drawable.land_2x);
+                    break;
+                case "1 to 3 Rooms":
+                    radioButton.setButtonDrawable(R.drawable.rooms_2x);
+                    break;
+                case "No Rooms":
+                    radioButton.setButtonDrawable(R.drawable.no_room_2x);
+                    break;
+                case "Swimming Pool":
+                    radioButton.setButtonDrawable(R.drawable.swimming_2x);
+                    break;
+                case "Garden Area":
+                    radioButton.setButtonDrawable(R.drawable.garden_2x);
+                    break;
+                case "Garage":
+                    radioButton.setButtonDrawable(R.drawable.garage_2x);
+                    break;
             }
         }
     }
