@@ -7,4 +7,6 @@
     <dimen name="margin24">24dp</dimen>
     <dimen name="margin12">12dp</dimen>
     <dimen name="padding8">8dp</dimen>
+    <dimen name="paddin5">5dp</dimen>
+    <dimen name="paddin15">15dp</dimen>
 </resources>
