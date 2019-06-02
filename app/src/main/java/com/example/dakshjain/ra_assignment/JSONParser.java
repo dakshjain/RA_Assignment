@@ -1,21 +1,21 @@
 package com.example.dakshjain.ra_assignment;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-import io.realm.RealmList;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class JSONParser {
 
@@ -27,41 +27,79 @@ public class JSONParser {
 
     private static Response response;
 
-    public static void getDataFromWeb() {
-        final Handler mHandler = new Handler(Looper.getMainLooper());
-        OkHttpClient client = new OkHttpClient();
+    static void getDataFromWeb() {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS).build();
+
         final Request request = new Request.Builder()
                 .url(MAIN_URL)
                 .build();
 
         final JSONObject jsonObject;
+
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
-                Log.d("OKHTTP", "onFailure");
-            }
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
-            @Override
-            public void onResponse(final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.d("OKHTTP", "response unsuccessfull");
                     throw new IOException("Unexpected code " + response);
                 } else {
                     // do something wih the result
                     Log.d("OKHTTP", "response successfull");
+                    String result = response.body().string();
                     try {
-                        jsonObjecttoRepo(response.body().string());
+                        jsonObjecttoFacilityRealm(result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+                    try {
+                        jsonObjectToExclusionRealm(result);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+                Log.d("OKHTTP", "onFailure");
             }
         });
     }
 
-    private static void jsonObjecttoRepo(String response) throws JSONException {
+    private static void jsonObjectToExclusionRealm(String response) throws JSONException {
+        JSONObject jsonObject = new JSONObject(response);
+        ArrayList<String> stringArrayList = new ArrayList<>();
+        JSONArray jsonArray = jsonObject.getJSONArray("exclusions");
+        RealmController realmController = new RealmController();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONArray innerJsonArray = jsonArray.getJSONArray(i);
+            stringArrayList.clear();
+            for (int j = 0; j < innerJsonArray.length(); j++) {
+                JSONObject innerJSONObject = innerJsonArray.getJSONObject(j);
+                String facility_id = innerJSONObject.getString("facility_id");
+                String option_id = innerJSONObject.getString("options_id");
+
+                ArrayList<Facility> facilityArrayList = realmController.getFacilitybyId(facility_id);
+                for (Facility facility : facilityArrayList) {
+                    if (facility.getOptionsRealmList().getId().equals(option_id)) {
+                        stringArrayList.add(facility.getOptionsRealmList().getName());
+                    }
+                }
+            }
+
+            ExclusionList exclusion = new ExclusionList(stringArrayList.get(0), stringArrayList.get(1));
+            realmController.insertOrUpdate(exclusion);
+        }
+
+
+    }
+
+    private static void jsonObjecttoFacilityRealm(String response) throws JSONException {
         JSONObject jsonObject = new JSONObject(response);
 
         JSONArray jsonArray = jsonObject.getJSONArray("facilities");
@@ -70,7 +108,6 @@ public class JSONParser {
             String facility_id = facility.getString("facility_id");
             String name = facility.getString("name");
 
-            RealmList<Options> optionsArrayList = new RealmList<>();
             JSONArray optionJSONArray = facility.getJSONArray("options");
             for (int j = 0; j < optionJSONArray.length(); j++) {
                 JSONObject optionJsonObject = optionJSONArray.getJSONObject(j);
@@ -78,13 +115,12 @@ public class JSONParser {
                 String option_name = optionJsonObject.getString("name");
                 String option_icon = optionJsonObject.getString("icon");
 
-                Options options = new Options(Integer.valueOf(option_id), option_name, option_icon);
-                optionsArrayList.add(options);
-            }
+                Options options = new Options(option_id, option_name, option_icon);
 
-            Facility facility_ = new Facility(Integer.valueOf(facility_id), name, optionsArrayList);
-            RealmController realmController = new RealmController();
-            realmController.insertOrupdate(facility_);
+                Facility facility_ = new Facility(facility_id, name, options);
+                RealmController realmController = new RealmController();
+                realmController.insertOrupdate(facility_);
+            }
         }
     }
 }

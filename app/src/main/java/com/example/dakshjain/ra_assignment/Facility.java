@@ -1,32 +1,29 @@
 package com.example.dakshjain.ra_assignment;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 public class Facility extends RealmObject {
 
     public Facility() {
     }
 
-    Facility(int id, String name, RealmList<Options> optionsRealmList) {
+    Facility(String id, String name, Options optionsRealmList) {
         this.id = id;
         this.name = name;
         this.optionsRealmList = optionsRealmList;
     }
 
-    @PrimaryKey
-    private int id;
+    private String id;
 
     private String name;
 
-    private RealmList<Options> optionsRealmList = new RealmList<Options>();
+    private Options optionsRealmList = new Options();
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -38,11 +35,11 @@ public class Facility extends RealmObject {
         this.name = name;
     }
 
-    public RealmList<Options> getOptionsRealmList() {
+    Options getOptionsRealmList() {
         return optionsRealmList;
     }
 
-    public void setOptionsRealmList(RealmList<Options> optionsRealmList) {
+    public void setOptionsRealmList(Options optionsRealmList) {
         this.optionsRealmList = optionsRealmList;
     }
 }
